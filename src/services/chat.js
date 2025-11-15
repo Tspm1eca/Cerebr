@@ -116,7 +116,7 @@ export async function callAPI({
                 if (chatManager && chatId) {
                     // 创建一个副本以避免回调函数意外修改
                     const messageCopy = { ...currentMessage };
-                    chatManager.updateLastMessage(chatId, messageCopy);
+                    chatManager.updateLastMessage(chatId, messageCopy, false); // 流式更新
                     onMessageUpdate(chatId, messageCopy);
                     lastUpdateTime = Date.now();
                 }
@@ -129,13 +129,14 @@ export async function callAPI({
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) {
-                     // 确保最后的数据被发送
-                    if (Date.now() - lastUpdateTime > 0) {
-                        dispatchUpdate();
-                    }
-                    // console.log('[chat.js] processStream: 响应流结束');
-                    break;
-                }
+                    // 确保最后的数据被发送
+                   if (Date.now() - lastUpdateTime > 0) {
+                       dispatchUpdate();
+                   }
+                   // 流结束，进行最终更新
+                   chatManager.updateLastMessage(chatId, { ...currentMessage }, true);
+                   break;
+               }
 
                 const chunk = new TextDecoder().decode(value);
                 buffer += chunk;

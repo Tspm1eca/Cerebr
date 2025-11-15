@@ -1,4 +1,5 @@
 import { storageAdapter } from './storage-adapter.js';
+import { generateTitle } from '../services/title-generator.js';
 
 const CHATS_KEY = 'cerebr_chats';
 const CURRENT_CHAT_ID_KEY = 'cerebr_current_chat_id';
@@ -8,7 +9,12 @@ export class ChatManager {
         this.storage = storageAdapter;
         this.currentChatId = null;
         this.chats = new Map();
+        this.apiConfig = null; // 用于存储API配置
         this.initialize();
+    }
+
+    setApiConfig(config) {
+        this.apiConfig = config;
     }
 
     async initialize() {
@@ -94,33 +100,86 @@ export class ChatManager {
         if (!currentChat) {
             throw new Error('当前没有活动的对话');
         }
-        // 如果这是第一条消息，移除 isNew 标记
-        if (currentChat.isNew) {
-            delete currentChat.isNew;
-        }
+
+        const isFirstMessage = currentChat.isNew && currentChat.messages.length === 0;
+
         currentChat.messages.push(message);
+
+        // 如果这是第一条消息，只移除 isNew 标记，不在此处生成标题
+        if (isFirstMessage) {
+            delete currentChat.isNew;
+            // 设置临时标题
+            const userMessage = currentChat.messages.find(m => m.role === 'user');
+            if (userMessage) {
+                let fallbackTitle = '';
+                if (typeof userMessage.content === 'string') {
+                    fallbackTitle = userMessage.content.substring(0, 20);
+                } else if (Array.isArray(userMessage.content)) {
+                    const textPart = userMessage.content.find(p => p.type === 'text');
+                    if (textPart) {
+                        fallbackTitle = textPart.text.substring(0, 20);
+                    }
+                }
+                if (fallbackTitle) {
+                    currentChat.title = fallbackTitle;
+                    document.dispatchEvent(new CustomEvent('chat-title-updated', { detail: { chatId: currentChat.id, newTitle: fallbackTitle } }));
+                }
+            }
+        }
+
         await this.saveChats();
     }
 
-    async updateLastMessage(chatId, message) {
+    async generateAndSaveTitle(chat) {
+        if (!this.apiConfig) {
+            console.warn("API config not set in ChatManager, skipping title generation.");
+            return; // 临时标题已设置，此处无需操作
+        }
+
+        // 确保我们有足够的内容来生成标题
+        if (chat.messages.length < 2) return;
+
+        const newTitle = await generateTitle(chat.messages, this.apiConfig);
+        if (newTitle && newTitle !== chat.title) {
+            chat.title = newTitle;
+            await this.saveChats();
+            // 通知UI更新
+            document.dispatchEvent(new CustomEvent('chat-title-updated', { detail: { chatId: chat.id, newTitle } }));
+        }
+    }
+
+    async updateLastMessage(chatId, message, isFinalUpdate = false) {
         const currentChat = this.chats.get(chatId);
         if (!currentChat || currentChat.messages.length === 0) {
-            // throw new Error('当前没有消息可以更新');
             return;
         }
-        // console.log("updateLastMessage", JSON.stringify(currentChat.messages), JSON.stringify(message));
+
+        // 确保最后一条消息是 assistant 消息
         if (currentChat.messages[currentChat.messages.length - 1].role === 'user') {
             currentChat.messages.push({
                 role: 'assistant',
+                content: '', // 初始化 content
                 updating: true
             });
         }
+
+        const lastMessage = currentChat.messages[currentChat.messages.length - 1];
         if (message.content) {
-            currentChat.messages[currentChat.messages.length - 1].content = message.content;
+            lastMessage.content = message.content;
         }
         if (message.reasoning_content) {
-            currentChat.messages[currentChat.messages.length - 1].reasoning_content = message.reasoning_content;
+            lastMessage.reasoning_content = message.reasoning_content;
         }
+
+        // 当流式响应结束时，触发标题生成
+        if (isFinalUpdate) {
+            delete lastMessage.updating;
+            // 检查是否是第一次AI回复（即对话中只有两条消息，一条user，一条assistant）
+            if (currentChat.messages.length === 2) {
+                this.generateAndSaveTitle(currentChat);
+            }
+        }
+
         await this.saveChats();
     }
 

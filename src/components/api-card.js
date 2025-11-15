@@ -299,7 +299,7 @@ function createAPICard({
         const modelName = modelNameInput.value;
 
         if (!apiKey || !baseUrl || !modelName) {
-            alert('请输入 API Key, Base URL, 和 Model Name');
+            alert('请输入 API Key, Base URL, 和 聊天模型');
             return;
         }
 

@@ -569,6 +569,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             onIndexChange: (newIndex) => {
                 selectedConfigIndex = newIndex;
                 updatePlaceholderWithCurrentModel();
+                chatManager.setApiConfig(apiConfigs[selectedConfigIndex]); // 更新ChatManager中的API配置
             },
             onSave: saveAPIConfigs,
             cardSelector: '.api-card',
@@ -624,6 +625,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 确保一定会渲染卡片
             renderAPICardsWithCallbacks();
             updatePlaceholderWithCurrentModel();
+            chatManager.setApiConfig(apiConfigs[selectedConfigIndex]); // 初始化时设置API配置
         } catch (error) {
             console.error('加载 API 配置失败:', error);
             // 只有在出错的情况下才使用默认值
@@ -635,6 +637,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             selectedConfigIndex = 0;
             renderAPICardsWithCallbacks();
             updatePlaceholderWithCurrentModel();
+            chatManager.setApiConfig(apiConfigs[selectedConfigIndex]); // 初始化时设置API配置
         }
     }
 
@@ -678,6 +681,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 等待 DOM 加载完成后再初始化
     await loadAPIConfigs();
 
+    // 监听标题更新事件
+    document.addEventListener('chat-title-updated', (e) => {
+        const { chatId, newTitle } = e.detail;
+        const card = chatListPage.querySelector(`.chat-card[data-chat-id="${chatId}"]`);
+        if (card) {
+            const titleElement = card.querySelector('.chat-title');
+            if (titleElement) {
+                titleElement.textContent = newTitle;
+            }
+        }
+    });
 
     // 图片预览功能
     const closeButton = previewModal.querySelector('.image-preview-close');
