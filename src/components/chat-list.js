@@ -2,7 +2,7 @@ import { appendMessage } from '../handlers/message-handler.js';
 import { storageAdapter, browserAdapter, isExtensionEnvironment } from '../utils/storage-adapter.js';
 import { toggleQuickChatOptions } from './quick-chat.js';
 
-// 渲染对话列表
+// 渲染历史
 export function renderChatList(chatManager, chatCards, searchTerm = '') {
     const template = chatCards.querySelector('.chat-card.template');
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -86,7 +86,7 @@ export async function switchToChat(chatId, chatManager) {
         const hasMessages = chat.messages && chat.messages.length > 0;
         toggleQuickChatOptions(!hasMessages);
 
-        // 更新对话列表中的选中状态
+        // 更新历史中的选中状态
         document.querySelectorAll('.chat-card').forEach(card => {
             if (card.dataset.chatId === chatId) {
                 card.classList.add('selected');
@@ -97,7 +97,7 @@ export async function switchToChat(chatId, chatManager) {
     }
 }
 
-// 显示对话列表
+// 显示历史
 export function showChatList(chatListPage, unifiedSettingsPage, onShow) {
     chatListPage.classList.add('show');
     if (unifiedSettingsPage) {
@@ -106,12 +106,12 @@ export function showChatList(chatListPage, unifiedSettingsPage, onShow) {
     if (onShow) onShow();
 }
 
-// 隐藏对话列表
+// 隐藏历史
 export function hideChatList(chatListPage) {
     chatListPage.classList.remove('show');
 }
 
-// 初始化对话列表事件监听
+// 初始化历史事件监听
 export function initChatListEvents({
     chatListPage,
     chatCards,
@@ -188,7 +188,7 @@ export function initializeChatList({
         messageInput.focus();
     });
 
-    // 对话列表按钮点击事件
+    // 历史按钮点击事件
     chatListButton.addEventListener('click', () => {
         showChatList(chatListPage, unifiedSettingsPage, () => {
             const searchInput = document.getElementById('chat-search-input');
@@ -216,7 +216,7 @@ export function initializeChatList({
         searchInput.focus();
     });
 
-    // 对话列表返回按钮点击事件
+    // 历史返回按钮点击事件
     const chatListBackButton = chatListPage.querySelector('.back-button');
     if (chatListBackButton) {
         chatListBackButton.addEventListener('click', () => hideChatList(chatListPage));

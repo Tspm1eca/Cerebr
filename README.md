@@ -39,7 +39,7 @@ Cerebr 是一款强大的浏览器 AI 助手扩展，现已支持 Chrome、Firef
 <img width="751" height="211" alt="image" src="https://github.com/user-attachments/assets/758a8ee7-44f3-404c-98ed-e2618800cefa" />
 <img width="334" height="542" alt="image" src="https://github.com/user-attachments/assets/39121a5b-6ea6-403c-a7b0-8aa33975923e" />
 
-### 对话列表
+### 历史
   * 增加刪除所有歷史記錄的按鈕。
   * 增加刪除二次確定。
 <img width="728" height="97" alt="螢幕擷取畫面 2025-11-11 022306" src="https://github.com/user-attachments/assets/579512b6-a160-4590-9819-d4aa23a01462" />

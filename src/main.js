@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 初始化用户问题历史
     chatContainerManager.initializeUserQuestions();
 
-    // 初始化对话列表组件
+    // 初始化历史组件
     initChatListEvents({
         chatListPage,
         chatCards: chatListPage.querySelector('.chat-cards'),
@@ -639,7 +639,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadAPIConfigs();
         renderAPICardsWithCallbacks();
 
-        // 同步对话列表
+        // 同步历史
         await chatManager.initialize();
         await renderChatList(
             chatManager,

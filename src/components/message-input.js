@@ -40,7 +40,7 @@ export function initMessageInput(config) {
             return;
         }
 
-        // 排除点击设置按钮、设置菜单、上下文菜单、对话列表页面的情况
+        // 排除点击设置按钮、设置菜单、上下文菜单、历史页面的情况
         if (!e.target.closest('#settings-button') &&
             !e.target.closest('#settings-menu') &&
             !e.target.closest('#context-menu') &&
