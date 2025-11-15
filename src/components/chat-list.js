@@ -98,9 +98,11 @@ export async function switchToChat(chatId, chatManager) {
 }
 
 // 显示对话列表
-export function showChatList(chatListPage, apiSettings, onShow) {
+export function showChatList(chatListPage, unifiedSettingsPage, onShow) {
     chatListPage.classList.add('show');
-    apiSettings.classList.remove('visible');  // 确保API设置页面被隐藏
+    if (unifiedSettingsPage) {
+        unifiedSettingsPage.style.display = 'none'; // 确保统一设置页面被隐藏
+    }
     if (onShow) onShow();
 }
 
@@ -162,7 +164,7 @@ export function initializeChatList({
     newChatButton,
     chatListButton,
     settingsMenu,
-    apiSettings
+    unifiedSettingsPage
 }) {
     const messageInput = document.getElementById('message-input');
     // 新建对话按钮点击事件
@@ -188,7 +190,7 @@ export function initializeChatList({
 
     // 对话列表按钮点击事件
     chatListButton.addEventListener('click', () => {
-        showChatList(chatListPage, apiSettings, () => {
+        showChatList(chatListPage, unifiedSettingsPage, () => {
             const searchInput = document.getElementById('chat-search-input');
             const chatCards = chatListPage.querySelector('.chat-cards');
             searchInput.value = ''; // 清空搜索框
