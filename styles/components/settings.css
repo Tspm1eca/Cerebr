@@ -211,3 +211,100 @@ input:checked + .slider:before {
     border-color: var(--cerebr-highlight-border-color);
     box-shadow: 0 0 0 1px var(--cerebr-highlight-border-color);
 }
+/* Unified Settings Page */
+#unified-settings-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+    overflow-y: auto;
+    flex-direction: column;
+    background: var(--cerebr-bg-color);
+}
+
+#unified-settings-page::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+}
+
+#unified-settings-page::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+#unified-settings-page::-webkit-scrollbar-thumb {
+    background-color: var(--cerebr-border-color);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+#unified-settings-page::-webkit-scrollbar-thumb:hover {
+    background-color: var(--cerebr-icon-color);
+}
+
+#unified-settings-page.visible {
+    display: flex;
+}
+
+.settings-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--cerebr-border-color);
+}
+
+.tab-button {
+    flex: 1;
+    padding-top: 0px;
+    padding-bottom: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--cerebr-text-color);
+    font-size: 14px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.tab-button.active {
+    border-bottom-color: var(--cerebr-highlight-border-color);
+    font-weight: 600;
+}
+
+.settings-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.settings-content::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background-color: var(--cerebr-border-color);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background-color: var(--cerebr-icon-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}

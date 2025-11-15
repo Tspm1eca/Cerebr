@@ -133,88 +133,14 @@
                     <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
             </div>
-            <div class="menu-item" id="quick-chat-settings">
-                <span>快速选项</span>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div class="menu-item" id="api-settings-toggle">
-                <span>API 设置</span>
+            <div class="menu-item" id="unified-settings-toggle">
+                <span>设置</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
             </div>
         </div>
         <div id="message-input" contenteditable="true" placeholder="输入消息..." role="textbox"></div>
-    </div>
-    <div id="api-settings">
-        <div class="settings-header">
-            <button class="back-button">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </button>
-            <span class="settings-title">API 设置</span>
-        </div>
-        <div class="api-cards">
-            <!-- 卡片模板 -->
-            <div class="api-card template" style="display: none;">
-                <div class="card-content">
-                    <div class="api-form">
-                        <div class="form-group">
-                            <div class="form-group-header">
-                                <label>API Key</label>
-                                <div class="card-actions">
-                                    <button class="card-button duplicate-btn">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                            <path d="M13 5H7V11H13V5Z" stroke="currentColor" stroke-width="1.5"/>
-                                            <path d="M10 3H4V9" stroke="currentColor" stroke-width="1.5"/>
-                                        </svg>
-                                    </button>
-                                    <button class="card-button delete-btn">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                            <path d="M3 4H13" stroke="currentColor" stroke-width="1.5"/>
-                                            <path d="M5 4V12H11V4" stroke="currentColor" stroke-width="1.5"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <input type="text" class="api-key" placeholder="输入 API Key">
-                        </div>
-                        <div class="form-group">
-                            <label>Base URL</label>
-                            <input type="text" class="base-url" placeholder="输入 Base URL">
-                        </div>
-                        <div class="form-group">
-                            <label>Model Name</label>
-                            <div class="model-name-container">
-                                <input type="text" class="model-name" placeholder="输入模型名称" list="model-list-datalist">
-                                <button class="test-connection-btn" title="测试连接">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                    </svg>
-                                </button>
-                                <div class="model-list-dropdown"></div>
-                            </div>
-                        </div>
-                        <div class="advanced-settings">
-                            <div class="advanced-settings-header" tabindex="0">
-                                <span>高级设置</span>
-                                <span class="toggle-icon">▼</span>
-                            </div>
-                            <div class="advanced-settings-content" style="display: none;">
-                                <div class="setting-item">
-                                    <label for="system-prompt">系统提示</label>
-                                    <textarea id="system-prompt" class="system-prompt" rows="3"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <div id="chat-list-page">
         <div class="settings-header">
@@ -268,43 +194,110 @@
         </div>
     </div>
 
-    <!-- 常用聊天選項設置頁面 -->
-    <div id="quick-chat-settings-page">
+    <!-- Unified Settings Page -->
+    <div id="unified-settings-page" style="display: none;">
         <div class="settings-header">
             <button class="back-button">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
             </button>
-            <span class="settings-title">快速选项</span>
+            <span class="settings-title">设置</span>
         </div>
-        <div class="quick-chat-settings-content">
-            <div class="quick-chat-options-list">
-                <!-- 常用選項將通過JavaScript動態生成 -->
-            </div>
-            <div class="quick-chat-settings-actions">
-                <button id="add-quick-chat-option" class="add-button">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
-                    添加选项
-                </button>
-                <button id="reset-quick-chat-options" class="reset-button">重置所有为默认</button>
-            </div>
+        <div class="settings-tabs">
+            <button class="tab-button active" data-tab="quick-chat-tab">快速选项</button>
+            <button class="tab-button" data-tab="api-settings-tab">API 设置</button>
         </div>
-
-        <!-- Reset Confirmation Modals -->
-        <div id="reset-confirm-modal-1" class="confirm-modal" style="display: none;">
-            <div class="confirm-modal-content">
-                <p>您确定要重置为默认选项吗？</p>
-                <small>此操作将删除所有自定义选项且无法撤销。</small>
-                <div class="confirm-modal-actions">
-                    <button id="cancel-reset-1" class="modal-button cancel">取消</button>
-                    <button id="confirm-reset-1" class="modal-button confirm">确定</button>
+        <div class="settings-content">
+            <div id="quick-chat-tab" class="tab-content active">
+                <div class="quick-chat-settings-content">
+                    <div class="quick-chat-options-list">
+                        <!-- Quick chat options will be dynamically generated here -->
+                    </div>
+                    <div class="quick-chat-settings-actions">
+                        <button id="add-quick-chat-option" class="add-button">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            添加选项
+                        </button>
+                        <button id="reset-quick-chat-options" class="reset-button">重置所有为默认</button>
+                    </div>
+                </div>
+            </div>
+            <div id="api-settings-tab" class="tab-content">
+                <div class="api-cards">
+                    <!-- API card template -->
+                    <div class="api-card template" style="display: none;">
+                        <div class="card-content">
+                            <div class="api-form">
+                                <div class="form-group">
+                                    <div class="form-group-header">
+                                        <label>API Key</label>
+                                        <div class="card-actions">
+                                            <button class="card-button duplicate-btn">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                    <path d="M13 5H7V11H13V5Z" stroke="currentColor" stroke-width="1.5"/>
+                                                    <path d="M10 3H4V9" stroke="currentColor" stroke-width="1.5"/>
+                                                </svg>
+                                            </button>
+                                            <button class="card-button delete-btn">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                    <path d="M3 4H13" stroke="currentColor" stroke-width="1.5"/>
+                                                    <path d="M5 4V12H11V4" stroke="currentColor" stroke-width="1.5"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="text" class="api-key" placeholder="输入 API Key">
+                                </div>
+                                <div class="form-group">
+                                    <label>Base URL</label>
+                                    <input type="text" class="base-url" placeholder="输入 Base URL">
+                                </div>
+                                <div class="form-group">
+                                    <label>Model Name</label>
+                                    <div class="model-name-container">
+                                        <input type="text" class="model-name" placeholder="输入模型名称" list="model-list-datalist">
+                                        <button class="test-connection-btn" title="测试连接">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                            </svg>
+                                        </button>
+                                        <div class="model-list-dropdown"></div>
+                                    </div>
+                                </div>
+                                <div class="advanced-settings">
+                                    <div class="advanced-settings-header" tabindex="0">
+                                        <span>高级设置</span>
+                                        <span class="toggle-icon">▼</span>
+                                    </div>
+                                    <div class="advanced-settings-content" style="display: none;">
+                                        <div class="setting-item">
+                                            <label for="system-prompt">系统提示</label>
+                                            <textarea id="system-prompt" class="system-prompt" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
+    <!-- Reset Confirmation Modal (shared) -->
+    <div id="reset-confirm-modal-1" class="confirm-modal" style="display: none;">
+        <div class="confirm-modal-content">
+            <p>您确定要重置为默认选项吗？</p>
+            <small>此操作将删除所有自定义选项且无法撤销。</small>
+            <div class="confirm-modal-actions">
+                <button id="cancel-reset-1" class="modal-button cancel">取消</button>
+                <button id="confirm-reset-1" class="modal-button confirm">确定</button>
+            </div>
+        </div>
     </div>
 
     <div class="image-preview-modal">

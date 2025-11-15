@@ -167,10 +167,6 @@ export async function initQuickChat({
         const resetButton = document.getElementById('reset-quick-chat-options');
         const optionsList = settingsPage.querySelector('.quick-chat-options-list');
 
-        // 返回按鈕事件
-        backButton.addEventListener('click', () => {
-            settingsPage.classList.remove('visible');
-        });
 
         // 添加選項按鈕事件
         addButton.addEventListener('click', () => {
@@ -345,13 +341,7 @@ export async function initQuickChat({
 
     // 設置按鈕事件處理
     function setupSettingsButton() {
-        const quickChatSettingsButton = document.getElementById('quick-chat-settings');
-        if (!quickChatSettingsButton || !settingsPage || !settingsMenu) return;
-
-        quickChatSettingsButton.addEventListener('click', () => {
-            settingsPage.classList.add('visible');
-            settingsMenu.classList.remove('visible');
-        });
+       // This is now handled by the unified settings manager in main.js
     }
 
     // 初始化

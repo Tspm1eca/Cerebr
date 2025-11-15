@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const chatListPage = document.getElementById('chat-list-page');
     const newChatButton = document.getElementById('new-chat-button');
     const chatListButton = document.getElementById('chat-list');
-    const apiSettings = document.getElementById('api-settings');
+    const unifiedSettingsPage = document.getElementById('unified-settings-page');
     const deleteMessageButton = document.getElementById('delete-message');
     const regenerateMessageButton = document.getElementById('regenerate-message');
     const webpageQAContainer = document.getElementById('webpage-qa');
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 常用聊天選項相關元素
     const quickChatContainer = document.getElementById('quick-chat-options');
-    const quickChatSettingsPage = document.getElementById('quick-chat-settings-page');
+    const quickChatSettingsPage = document.getElementById('quick-chat-tab');
 
     // 修改: 创建一个对象引用来保存当前控制器
     const abortControllerRef = { current: null };
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         newChatButton,
         chatListButton,
         settingsMenu,
-        apiSettings,
+        unifiedSettingsPage,
         loadChatContent: (chat) => loadChatContent(chat, chatContainer)
     });
 
@@ -513,10 +513,38 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await initSendWebpageSwitch();
 
+    // Unified Settings Page Logic
+   const unifiedSettingsToggle = document.getElementById('unified-settings-toggle');
+   const backButton = unifiedSettingsPage.querySelector('.back-button');
+   const tabButtons = unifiedSettingsPage.querySelectorAll('.tab-button');
+   const tabContents = unifiedSettingsPage.querySelectorAll('.tab-content');
+
+   unifiedSettingsToggle.addEventListener('click', () => {
+       unifiedSettingsPage.style.display = 'flex';
+       settingsMenu.classList.remove('visible');
+   });
+
+   backButton.addEventListener('click', () => {
+       unifiedSettingsPage.style.display = 'none';
+   });
+
+   tabButtons.forEach(button => {
+       button.addEventListener('click', () => {
+           tabButtons.forEach(btn => btn.classList.remove('active'));
+           button.classList.add('active');
+
+           tabContents.forEach(content => {
+               if (content.id === button.dataset.tab) {
+                   content.classList.add('active');
+               } else {
+                   content.classList.remove('active');
+               }
+           });
+       });
+   });
+
     // API 设置功能
-    const apiSettingsToggle = document.getElementById('api-settings-toggle');
-    const backButton = document.querySelector('.back-button');
-    const apiCards = document.querySelector('.api-cards');
+    const apiCards = unifiedSettingsPage.querySelector('.api-cards');
 
     // 更新 placeholder 的函数
     function updatePlaceholderWithCurrentModel() {
@@ -540,7 +568,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             onSelect: (selectedCard, index) => {
                 // 只有在点击卡片本身时才关闭设置面板
                 if (selectedCard && selectedCard.contains(event.target) && !selectedCard.querySelector('.model-name-container').contains(event.target)) {
-                    apiSettings.classList.remove('visible');
+                   unifiedSettingsPage.style.display = 'none';
                 }
             }
         });
@@ -643,18 +671,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 等待 DOM 加载完成后再初始化
     await loadAPIConfigs();
 
-    // 显示/隐藏 API 设置
-    apiSettingsToggle.addEventListener('click', () => {
-        apiSettings.classList.add('visible');
-        settingsMenu.classList.remove('visible');
-        // 确保每次打开设置时都重新渲染卡片
-        renderAPICardsWithCallbacks();
-    });
-
-    // 返回聊天界面
-    backButton.addEventListener('click', () => {
-        apiSettings.classList.remove('visible');
-    });
 
     // 图片预览功能
     const closeButton = previewModal.querySelector('.image-preview-close');
