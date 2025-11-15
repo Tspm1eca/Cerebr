@@ -170,8 +170,8 @@ export function initializeChatList({
     // 新建对话按钮点击事件
     newChatButton.addEventListener('click', async () => {
         const currentChat = chatManager.getCurrentChat();
-        // 如果当前对话没有消息，则不创建新对话
-        if (currentChat && currentChat.messages.length === 0) {
+        // 如果当前对话没有消息，并且不是一个已经保存的对话，则不创建新对话
+        if (currentChat && currentChat.messages.length === 0 && currentChat.isNew) {
             return;
         }
 
@@ -184,6 +184,9 @@ export function initializeChatList({
 
         const newChat = chatManager.createNewChat();
         await switchToChat(newChat.id, chatManager);
+        // 新建对话后，立即渲染一次列表，以显示这个“新对话”
+        const chatCards = chatListPage.querySelector('.chat-cards');
+        renderChatList(chatManager, chatCards);
         settingsMenu.classList.remove('visible');
         messageInput.focus();
     });

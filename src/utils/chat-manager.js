@@ -39,10 +39,11 @@ export class ChatManager {
             id: chatId,
             title: title,
             messages: [],
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            isNew: true // 添加一个标记来识别新创建的、尚未保存的对话
         };
         this.chats.set(chatId, chat);
-        this.saveChats();
+        // this.saveChats(); // 不再立即保存
         return chat;
     }
 
@@ -81,15 +82,21 @@ export class ChatManager {
     }
 
     getAllChats() {
-        return Array.from(this.chats.values()).sort((a, b) =>
-            new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        return Array.from(this.chats.values())
+            .filter(chat => !chat.isNew || chat.messages.length > 0) // 过滤掉未保存的新对话
+            .sort((a, b) =>
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
     }
 
     async addMessageToCurrentChat(message) {
         const currentChat = this.getCurrentChat();
         if (!currentChat) {
             throw new Error('当前没有活动的对话');
+        }
+        // 如果这是第一条消息，移除 isNew 标记
+        if (currentChat.isNew) {
+            delete currentChat.isNew;
         }
         currentChat.messages.push(message);
         await this.saveChats();
@@ -127,7 +134,8 @@ export class ChatManager {
     }
 
     async saveChats() {
-        await this.storage.set({ [CHATS_KEY]: Array.from(this.chats.values()) });
+        const chatsToSave = Array.from(this.chats.values()).filter(chat => !chat.isNew);
+        await this.storage.set({ [CHATS_KEY]: chatsToSave });
     }
 
     async clearCurrentChat() {

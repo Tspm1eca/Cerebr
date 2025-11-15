@@ -324,6 +324,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 content: content
             };
 
+            const wasNewChat = chatManager.getCurrentChat()?.isNew;
+
             // 先添加用户消息到界面和历史记录
             await appendMessage({
                 text: userMessage,
@@ -342,6 +344,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const messages = currentChat ? [...currentChat.messages] : [];  // 从chatManager获取消息历史
             messages.push(userMessage);
             chatManager.addMessageToCurrentChat(userMessage);
+
+            if (wasNewChat) {
+                const chatCards = chatListPage.querySelector('.chat-cards');
+                renderChatList(chatManager, chatCards);
+            }
 
             // 显示等待动画
             const waitingMessage = createWaitingMessage(chatContainer);

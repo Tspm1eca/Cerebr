@@ -104,9 +104,23 @@ export async function appendMessage({
     // 如果是用户消息，且当前对话只有这一条消息，则更新对话标题
     if (sender === 'user' && !skipHistory) {
         const currentChat = chatManager.getCurrentChat();
-        if (currentChat && currentChat.messages.length === 0) {
-            currentChat.title = textContent;
-            chatManager.saveChats();
+        // 只有当对话是新的（即isNew为true）并且这是第一条消息时，才更新标题
+        if (currentChat && currentChat.isNew && currentChat.messages.length === 0) {
+            // 提取纯文本内容作为标题
+            let title = '';
+            if (Array.isArray(text.content)) {
+                const textPart = text.content.find(p => p.type === 'text');
+                if (textPart) {
+                    title = textPart.text.substring(0, 50); // 限制标题长度
+                }
+            } else if (typeof text.content === 'string') {
+                title = text.content.substring(0, 50);
+            }
+
+            if (title) {
+                currentChat.title = title;
+            }
+            // chatManager.saveChats(); // 保存操作会由 addMessageToCurrentChat 触发
         }
     }
 
