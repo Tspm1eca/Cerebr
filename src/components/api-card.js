@@ -437,6 +437,13 @@ function createAPICard({
            highlightedIndex = -1;
        });
 
+        input.addEventListener('blur', () => {
+            // 使用一个短暂的延迟来允许点击下拉列表中的项目
+            setTimeout(() => {
+                dropdown.classList.remove('visible');
+            }, 150);
+        });
+
        input.addEventListener('input', () => {
            const searchTerm = input.value.toLowerCase();
            const cacheKey = `${baseUrlInput.value.replace(/\/chat\/completions$/, '')}:${apiKeyInput.value}`;
