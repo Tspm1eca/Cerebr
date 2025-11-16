@@ -55,7 +55,7 @@ export async function generateTitle(messages, apiConfig) {
                 'Authorization': `Bearer ${apiConfig.apiKey}`
             },
             body: JSON.stringify({
-                model: apiConfig.modelName || "gpt-4o",
+                model: apiConfig.titleModelName || apiConfig.modelName || "gpt-4o",
                 messages: messagesForAPI,
                 stream: false, // 非流式請求
                 temperature: 0.5,

@@ -4,6 +4,7 @@
  * @property {string} apiKey - API密钥
  * @property {string} baseUrl - API的基础URL
  * @property {string} modelName - 模型名称
+ * @property {string} titleModelName - 标题生成模型名称
  * @property {Object} advancedSettings - 高级设置
  * @property {string} advancedSettings.systemPrompt - 系统提示
  * @property {boolean} advancedSettings.isExpanded - 高级设置是否展开
@@ -110,6 +111,7 @@ function createAPICard({
     const apiKeyInput = template.querySelector('.api-key');
     const baseUrlInput = template.querySelector('.base-url');
     const modelNameInput = template.querySelector('.model-name');
+    const titleModelNameInput = template.querySelector('.title-model-name');
     const modelListDropdown = template.querySelector('.model-list-dropdown');
     const testConnectionBtn = template.querySelector('.test-connection-btn');
     const systemPromptInput = template.querySelector('.system-prompt');
@@ -125,6 +127,7 @@ function createAPICard({
     apiKeyInput.value = config.apiKey || '';
     baseUrlInput.value = config.baseUrl || 'https://api.openai.com/v1/chat/completions';
     modelNameInput.value = config.modelName || 'gpt-4o';
+   titleModelNameInput.value = config.titleModelName || '';
 
     // 设置系统提示的默认值
     systemPromptInput.value = config.advancedSettings?.systemPrompt || '';
@@ -194,30 +197,30 @@ function createAPICard({
     };
 
     // 为输入框添加点击事件阻止冒泡
-    [apiKeyInput, baseUrlInput, modelNameInput, systemPromptInput].forEach(input => {
+    [apiKeyInput, baseUrlInput, modelNameInput, titleModelNameInput, systemPromptInput].forEach(input => {
         input.addEventListener('click', stopPropagation);
         input.addEventListener('focus', stopPropagation);
     });
 
     // 获取模型列表
-    async function fetchModels(force = false) {
+    async function fetchModels(input, dropdown, force = false) {
         const apiKey = apiKeyInput.value;
         const baseUrl = baseUrlInput.value.replace(/\/chat\/completions$/, '');
         const cacheKey = `${baseUrl}:${apiKey}`;
 
         if (!apiKey || !baseUrl) {
-            modelListDropdown.innerHTML = '<div class="model-list-item">请输入API Key和Base URL</div>';
-            modelListDropdown.classList.add('visible');
+            dropdown.innerHTML = '<div class="model-list-item">请输入API Key和Base URL</div>';
+            dropdown.classList.add('visible');
             return;
         }
 
         if (!force && modelCache[cacheKey]) {
-            renderModelList(modelCache[cacheKey]);
+            renderModelList(modelCache[cacheKey], input, dropdown);
             return;
         }
 
-        modelListDropdown.innerHTML = '<div class="model-list-item">加载中...</div>';
-        modelListDropdown.classList.add('visible');
+        dropdown.innerHTML = '<div class="model-list-item">加载中...</div>';
+        dropdown.classList.add('visible');
 
         try {
             const response = await fetch(`${baseUrl}/models`, {
@@ -233,17 +236,17 @@ function createAPICard({
             const data = await response.json();
             const models = data.data.map(model => model.id);
             modelCache[cacheKey] = models;
-            renderModelList(models);
+            renderModelList(models, input, dropdown);
         } catch (error) {
             console.error(error);
-            modelListDropdown.innerHTML = `<div class="model-list-item">${error.message}</div>`;
+            dropdown.innerHTML = `<div class="model-list-item">${error.message}</div>`;
         }
     }
 
-    function renderModelList(models) {
-        modelListDropdown.innerHTML = '';
+    function renderModelList(models, input, dropdown) {
+        dropdown.innerHTML = '';
         if (models.length === 0) {
-            modelListDropdown.classList.remove('visible');
+            dropdown.classList.remove('visible');
             return;
         }
         models.forEach((model, idx) => {
@@ -253,18 +256,25 @@ function createAPICard({
             item.dataset.index = idx;
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
-                modelNameInput.value = model;
-                modelListDropdown.classList.remove('visible');
-                onChange(index, { ...config, modelName: model });
+                input.value = model;
+                dropdown.classList.remove('visible');
+                // The input's value has already been set to `model`
+                onChange(index, {
+                    ...config,
+                    apiKey: apiKeyInput.value,
+                    baseUrl: baseUrlInput.value,
+                    modelName: modelNameInput.value,
+                    titleModelName: titleModelNameInput.value
+                });
             });
-            modelListDropdown.appendChild(item);
+            dropdown.appendChild(item);
         });
-        modelListDropdown.classList.add('visible');
+        dropdown.classList.add('visible');
         highlightedIndex = -1; // Reset highlight when list is re-rendered
     }
 
-    function updateHighlight() {
-        const items = modelListDropdown.querySelectorAll('.model-list-item');
+    function updateHighlight(dropdown) {
+        const items = dropdown.querySelectorAll('.model-list-item');
         items.forEach((item, idx) => {
             if (idx === highlightedIndex) {
                 item.classList.add('highlighted');
@@ -275,39 +285,33 @@ function createAPICard({
         });
     }
 
-    modelNameInput.addEventListener('focus', () => {
-        fetchModels();
-        highlightedIndex = -1;
-    });
-
-    modelNameInput.addEventListener('input', () => {
-        const searchTerm = modelNameInput.value.toLowerCase();
-        const cacheKey = `${baseUrlInput.value.replace(/\/chat\/completions$/, '')}:${apiKeyInput.value}`;
-        if (modelCache[cacheKey]) {
-            const filteredModels = modelCache[cacheKey].filter(model => model.toLowerCase().includes(searchTerm));
-            renderModelList(filteredModels);
-        }
-    });
     testConnectionBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        testModelConnection();
+        testModelConnection(e.currentTarget);
     });
 
-    async function testModelConnection() {
-        const apiKey = apiKeyInput.value;
-        const baseUrl = baseUrlInput.value;
-        const modelName = modelNameInput.value;
+   titleModelNameInput.closest('.model-name-container').querySelector('.test-connection-btn').addEventListener('click', (e) => {
+       e.stopPropagation();
+       testModelConnection(e.currentTarget);
+   });
 
-        if (!apiKey || !baseUrl || !modelName) {
-            alert('请输入 API Key, Base URL, 和 聊天模型');
-            return;
-        }
+    async function testModelConnection(button) {
+       const container = button.closest('.model-name-container');
+       const input = container.querySelector('input');
+       const modelName = input.value;
+       const apiKey = apiKeyInput.value;
+       const baseUrl = baseUrlInput.value;
 
-        const originalBtnContent = testConnectionBtn.innerHTML;
-        testConnectionBtn.disabled = true;
-        testConnectionBtn.innerHTML = `
-            <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+       if (!apiKey || !baseUrl || !modelName) {
+           alert('请输入 API Key, Base URL, 和模型名称');
+           return;
+       }
+
+       const originalBtnContent = button.innerHTML;
+       button.disabled = true;
+       button.innerHTML = `
+           <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
             </svg>
         `;
 
@@ -337,7 +341,7 @@ function createAPICard({
                 throw new Error(errorMsg);
             }
 
-            testConnectionBtn.innerHTML = `
+            button.innerHTML = `
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 6L9 17l-5-5"/>
                 </svg>
@@ -346,7 +350,7 @@ function createAPICard({
         } catch (error) {
             console.error('Test connection error:', error);
             alert(`连接失败: ${error.message}`);
-            testConnectionBtn.innerHTML = `
+            button.innerHTML = `
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -354,8 +358,8 @@ function createAPICard({
             `;
         } finally {
             setTimeout(() => {
-                testConnectionBtn.disabled = false;
-                testConnectionBtn.innerHTML = originalBtnContent;
+               button.disabled = false;
+               button.innerHTML = originalBtnContent;
             }, 3000);
         }
     }
@@ -370,7 +374,7 @@ function createAPICard({
     let isComposing = false;
 
     // 监听输入法开始
-    [apiKeyInput, baseUrlInput, modelNameInput, systemPromptInput].forEach(input => {
+    [apiKeyInput, baseUrlInput, modelNameInput, titleModelNameInput, systemPromptInput].forEach(input => {
         input.addEventListener('compositionstart', () => {
             isComposing = true;
         });
@@ -393,36 +397,55 @@ function createAPICard({
         });
     });
 
-    modelNameInput.addEventListener('keydown', (e) => {
-        if (!modelListDropdown.classList.contains('visible')) return;
+   function handleModelInputKeydown(input, dropdown, e) {
+       if (!dropdown.classList.contains('visible')) return;
 
-        const items = modelListDropdown.querySelectorAll('.model-list-item');
-        if (items.length === 0) return;
+       const items = dropdown.querySelectorAll('.model-list-item');
+       if (items.length === 0) return;
 
-        switch (e.key) {
-            case 'ArrowDown':
-                e.preventDefault();
-                highlightedIndex = (highlightedIndex + 1) % items.length;
-                updateHighlight();
-                break;
-            case 'ArrowUp':
-                e.preventDefault();
-                highlightedIndex = (highlightedIndex - 1 + items.length) % items.length;
-                updateHighlight();
-                break;
-            case 'Enter':
-                e.preventDefault();
-                e.stopPropagation();
-                if (highlightedIndex > -1) {
-                    items[highlightedIndex].click();
-                }
-                break;
-            case 'Escape':
-                e.preventDefault();
-                modelListDropdown.classList.remove('visible');
-                break;
-        }
-    });
+       switch (e.key) {
+           case 'ArrowDown':
+               e.preventDefault();
+               highlightedIndex = (highlightedIndex + 1) % items.length;
+               updateHighlight(dropdown);
+               break;
+           case 'ArrowUp':
+               e.preventDefault();
+               highlightedIndex = (highlightedIndex - 1 + items.length) % items.length;
+               updateHighlight(dropdown);
+               break;
+           case 'Enter':
+               e.preventDefault();
+               e.stopPropagation();
+               if (highlightedIndex > -1) {
+                   items[highlightedIndex].click();
+               }
+               break;
+           case 'Escape':
+               e.preventDefault();
+               dropdown.classList.remove('visible');
+               break;
+       }
+   }
+
+   [modelNameInput, titleModelNameInput].forEach(input => {
+       const dropdown = input.closest('.model-name-container').querySelector('.model-list-dropdown');
+       input.addEventListener('keydown', (e) => handleModelInputKeydown(input, dropdown, e));
+
+       input.addEventListener('focus', () => {
+           fetchModels(input, dropdown);
+           highlightedIndex = -1;
+       });
+
+       input.addEventListener('input', () => {
+           const searchTerm = input.value.toLowerCase();
+           const cacheKey = `${baseUrlInput.value.replace(/\/chat\/completions$/, '')}:${apiKeyInput.value}`;
+           if (modelCache[cacheKey]) {
+               const filteredModels = modelCache[cacheKey].filter(model => model.toLowerCase().includes(searchTerm));
+               renderModelList(filteredModels, input, dropdown);
+           }
+       });
+   });
 
     // 为按钮添加点击事件阻止冒泡
     template.querySelectorAll('.card-button').forEach(button => {
@@ -438,12 +461,14 @@ function createAPICard({
     });
 
     // 监听输入框变化
-    [apiKeyInput, baseUrlInput, modelNameInput].forEach(input => {
+    [apiKeyInput, baseUrlInput, modelNameInput, titleModelNameInput].forEach(input => {
         input.addEventListener('change', () => {
             onChange(index, {
+                ...config,
                 apiKey: apiKeyInput.value,
                 baseUrl: baseUrlInput.value,
-                modelName: modelNameInput.value
+                modelName: modelNameInput.value,
+                titleModelName: titleModelNameInput.value
             });
         });
     });
