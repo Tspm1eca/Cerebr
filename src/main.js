@@ -158,6 +158,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const currentChat = chatManager.getCurrentChat();
     if (currentChat) {
         await loadChatContent(currentChat, chatContainer);
+        const hasMessages = currentChat.messages && currentChat.messages.length > 0;
+        toggleQuickChatOptions(!hasMessages);
     }
 
     if ((!currentChat || currentChat.messages.length === 0) && isExtensionEnvironment) {
