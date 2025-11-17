@@ -6,22 +6,6 @@ class CerebrSidebar {
     this.pageKey = window.location.origin + window.location.pathname;
     this.lastUrl = window.location.href;
     this.sidebar = null;
-    this.hideTimeout = null;
-    this.handleSidebarTransitionEnd = (event) => {
-      if (!this.sidebar || event.target !== this.sidebar) {
-        return;
-      }
-      // We listen for both transform and opacity to end
-      if (event.propertyName === 'transform' || event.propertyName === 'opacity') {
-        if (!this.isVisible) {
-          if (this.hideTimeout) {
-            clearTimeout(this.hideTimeout);
-            this.hideTimeout = null;
-          }
-          this.sidebar.style.display = 'none';
-        }
-      }
-    };
     this.initializeSidebar();
     this.setupDragAndDrop(); // 添加拖放事件监听器
   }
@@ -51,11 +35,9 @@ class CerebrSidebar {
         this.sidebarWidth = state.width;
 
         if (this.isVisible) {
-          this.sidebar.style.display = 'block';
           this.sidebar.classList.add('visible');
         } else {
           this.sidebar.classList.remove('visible');
-          this.sidebar.style.display = 'none';
         }
         this.sidebar.style.setProperty('--sidebar-width', `${this.sidebarWidth}px`);
       }
@@ -159,8 +141,6 @@ class CerebrSidebar {
 
       this.sidebar = document.createElement('div');
       this.sidebar.className = 'cerebr-sidebar';
-      this.sidebar.style.display = 'none';
-      this.sidebar.addEventListener('transitionend', this.handleSidebarTransitionEnd);
 
       // 防止外部JavaScript访问和修改侧边栏
       Object.defineProperty(this.sidebar, 'remove', {
@@ -282,39 +262,11 @@ class CerebrSidebar {
     if (!this.initialized) return;
 
     try {
-      // 在改变可见性之前保存旧状态
       const wasVisible = this.isVisible;
       this.isVisible = !this.isVisible;
 
       // 更新DOM状态
-      if (this.isVisible) {
-        if (this.hideTimeout) {
-          clearTimeout(this.hideTimeout);
-          this.hideTimeout = null;
-        }
-        this.sidebar.style.display = 'block';
-        void this.sidebar.offsetWidth; // 强制重排以使过渡动画运行
-        this.sidebar.classList.add('visible');
-      } else {
-        this.sidebar.classList.remove('visible');
-
-        if (this.hideTimeout) {
-          clearTimeout(this.hideTimeout);
-          this.hideTimeout = null;
-        }
-
-        if (!wasVisible) {
-          this.sidebar.style.display = 'none';
-        } else {
-          this.hideTimeout = setTimeout(() => {
-            if (!this.isVisible) {
-              this.sidebar.style.display = 'none';
-            }
-            this.hideTimeout = null;
-          }, 350);
-          // 350ms是为了和css的transition的0.3s对齐，再加一些余量，等动画结束再设置为display:none
-        }
-      }
+      this.sidebar.classList.toggle('visible');
 
       // 保存状态
       this.saveState();
