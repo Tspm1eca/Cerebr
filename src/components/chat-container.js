@@ -31,12 +31,16 @@ export function initChatContainer({
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
-                if (node.classList && node.classList.contains('user-message')) {
-                    const question = node.textContent.trim();
-                    // 只有当问题不在历史记录中时才添加
-                    if (question && !userQuestions.includes(question)) {
-                        userQuestions.push(question);
+                if (node.nodeType === Node.ELEMENT_NODE) { // 确保是元素节点
+                    if (node.classList && node.classList.contains('user-message')) {
+                        const question = node.textContent.trim();
+                        // 只有当问题不在历史记录中时才添加
+                        if (question && !userQuestions.includes(question)) {
+                            userQuestions.push(question);
+                        }
                     }
+                    // 为新消息中的代码块添加复制按钮
+                    addCopyButtonToCodeBlocks(node);
                 }
             });
         });
@@ -527,15 +531,53 @@ export function initChatContainer({
         });
     }
 
-    // 初始化函数
-    function initialize() {
-        setupMathContextMenu();
-        setupGlobalEvents();
-        initializeUserQuestions();
+    // 为代码块添加复制按钮的函数
+    function addCopyButtonToCodeBlocks(container) {
+        const codeBlocks = container.querySelectorAll('pre');
+        codeBlocks.forEach(pre => {
+            // 防止重复添加按钮
+            if (pre.querySelector('.copy-code-button')) {
+                return;
+            }
+
+            const button = document.createElement('button');
+            button.className = 'copy-code-button';
+            const copyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+            const copiedIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            button.innerHTML = copyIcon;
+            pre.appendChild(button);
+
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // 防止触发其他点击事件
+                const code = pre.querySelector('code');
+                if (code) {
+                    navigator.clipboard.writeText(code.textContent).then(() => {
+                        button.innerHTML = copiedIcon;
+                        setTimeout(() => {
+                            button.innerHTML = copyIcon;
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy code: ', err);
+                        button.textContent = 'Error'; // Keep text for error
+                        setTimeout(() => {
+                            button.innerHTML = copyIcon;
+                        }, 2000);
+                    });
+                }
+            });
+        });
     }
 
-    // 立即执行初始化
-    initialize();
+     // 初始化函数
+     function initialize() {
+         setupMathContextMenu();
+         setupGlobalEvents();
+         initializeUserQuestions();
+         addCopyButtonToCodeBlocks(chatContainer); // 为已存在的代码块添加按钮
+     }
+
+     // 立即执行初始化
+     initialize();
 
     // 添加自定义复制事件处理器
     chatContainer.addEventListener('copy', (event) => {
