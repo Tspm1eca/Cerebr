@@ -68,7 +68,7 @@
     box-shadow: 0 4px 20px var(--cerebr-popup-shadow);
     padding: 8px;
     display: none;
-    min-width: 180px;
+    min-width: 140px;
     margin-bottom: 8px;
     transform-origin: bottom left;
     backdrop-filter: blur(var(--cerebr-blur-radius));
