@@ -100,7 +100,6 @@ class CerebrSidebar {
           height: calc(100vh - 40px);
           background: var(--cerebr-bg-color, #ffffff);
           color: var(--cerebr-text-color, #000000);
-          --cerebr-sidebar-box-shadow: -2px 0 15px rgba(0,0,0,0.1);
           box-shadow: none;
           z-index: 2147483647;
           border-radius: 12px;
@@ -116,19 +115,17 @@ class CerebrSidebar {
         }
         .cerebr-sidebar.initialized {
           visibility: visible;
-          transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+          transition: transform 0.3s ease, opacity 0.3s ease;
           pointer-events: auto;
         }
         @media (prefers-color-scheme: dark) {
           .cerebr-sidebar {
             --cerebr-bg-color: #282c34;
             --cerebr-text-color: #abb2bf;
-            --cerebr-sidebar-box-shadow: -2px 0 20px rgba(0,0,0,0.3);
           }
         }
         .cerebr-sidebar.visible {
           transform: translateX(calc(-1 * var(--sidebar-translation))) scale(1);
-          box-shadow: var(--cerebr-sidebar-box-shadow, -2px 0 15px rgba(0,0,0,0.1));
           opacity: 1;
         }
         .cerebr-sidebar__content {
