@@ -105,6 +105,10 @@
     fill: none;
     stroke-width: 1.5;
 }
+
+.chat-card .card-button.webpage-url-btn svg {
+    stroke-width: 2;
+}
 /* 搜索容器样式 */
 .search-container {
     position: relative;

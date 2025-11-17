@@ -51,6 +51,20 @@ export function renderChatList(chatManager, chatCards, searchTerm = '') {
             card.classList.remove('selected');
         }
 
+        // Add webpage URL button if URLs exist
+        if (chat.webpageUrls && chat.webpageUrls.length > 0) {
+            const urlButton = card.querySelector('.webpage-url-btn');
+            urlButton.style.display = 'flex';
+            // Join all URLs into a single string for the title
+            urlButton.title = chat.webpageUrls.join('\n');
+            urlButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // For now, let's just open the first URL.
+                // A more advanced implementation could show a dropdown.
+                window.open(chat.webpageUrls[0], '_blank');
+            });
+        }
+
         chatCards.appendChild(card);
     });
 }

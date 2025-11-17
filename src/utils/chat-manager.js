@@ -46,6 +46,7 @@ export class ChatManager {
             title: title,
             messages: [],
             createdAt: new Date().toISOString(),
+            webpageUrls: [], // Add this to store webpage URLs
             isNew: true // 添加一个标记来识别新创建的、尚未保存的对话
         };
         this.chats.set(chatId, chat);
@@ -95,7 +96,7 @@ export class ChatManager {
             );
     }
 
-    async addMessageToCurrentChat(message) {
+    async addMessageToCurrentChat(message, webpageInfo) {
         const currentChat = this.getCurrentChat();
         if (!currentChat) {
             throw new Error('当前没有活动的对话');
@@ -104,6 +105,14 @@ export class ChatManager {
         const isFirstMessage = currentChat.isNew && currentChat.messages.length === 0;
 
         currentChat.messages.push(message);
+
+        // If there's webpage info, add the URLs to the chat
+        if (webpageInfo && webpageInfo.pages) {
+            const urls = webpageInfo.pages.map(page => page.url);
+            // Use a Set to avoid duplicate URLs
+            const uniqueUrls = new Set([...(currentChat.webpageUrls || []), ...urls]);
+            currentChat.webpageUrls = Array.from(uniqueUrls);
+        }
 
         // 如果这是第一条消息，只移除 isNew 标记，不在此处生成标题
         if (isFirstMessage) {

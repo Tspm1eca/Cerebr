@@ -345,7 +345,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const currentChat = chatManager.getCurrentChat();
             const messages = currentChat ? [...currentChat.messages] : [];  // 从chatManager获取消息历史
             messages.push(userMessage);
-            chatManager.addMessageToCurrentChat(userMessage);
+            const webpageInfo = isExtensionEnvironment && sendWebpageSwitch.checked ? await getEnabledTabsContent() : null;
+            chatManager.addMessageToCurrentChat(userMessage, webpageInfo);
 
             if (wasNewChat) {
                 const chatCards = chatListPage.querySelector('.chat-cards');
@@ -360,7 +361,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 messages,
                 apiConfig: apiConfigs[selectedConfigIndex],
                 userLanguage: navigator.language,
-                webpageInfo: isExtensionEnvironment && sendWebpageSwitch.checked ? await getEnabledTabsContent() : null
+                webpageInfo: webpageInfo
             };
 
             // 调用带重试逻辑的 API
