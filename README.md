@@ -11,58 +11,8 @@ Cerebr 是一款强大的浏览器 AI 助手扩展，现已支持 Chrome、Firef
 在尝试了市面上现有的浏览器 AI 助手后，我们发现它们要么有使用次数限制，要么界面过于花哨。Cerebr 应运而生，专注于提供一个简洁、高效、无干扰的 AI 助手体验。
 
 ---
-## 個人修改內容
-
-### 侧边栏介面
-  * 為打开/关闭 Cerebr 侧边栏的動畫添加淡入淡出和稍微放大縮小效果。
-  * 添加主窗口拉伸
-<img width="1395" height="1577" alt="image" src="https://github.com/user-attachments/assets/2247530d-19bd-41ec-962b-5a206bfecfe5" />
-
-### 聊天介面
-  * 為等待模型回覆期間加一個等待小動畫。
-  * 在聊天主頁添加滾動條
-<img width="709" height="816" alt="image" src="https://github.com/user-attachments/assets/2ec674c1-e3a6-4802-bf2c-82cacbc21ad1" />
-<img width="795" height="312" alt="image" src="https://github.com/user-attachments/assets/08d16252-8317-44ad-9e6a-51e529b30a40" />
-
-### 快速選項
-  * 增加「快速選項」功能，並允許用戶自訂prompt、名稱和圖標。
-  * 「快速選項」會在用戶發送訊息後會自動隱藏（帶動畫）。
-<img width="751" height="211" alt="image" src="https://github.com/user-attachments/assets/ed0911c4-75d5-42e5-a778-f93052c5b2a9" />
-<img width="735" height="1406" alt="image" src="https://github.com/user-attachments/assets/48646ddc-2c35-451f-bb5f-e1432a461499" />
-
-### 輸入框與菜單
-  * 在主介面輸入框中顯示當前使用模型名稱。
-  * 在主介面輸入框旁添加常用的「新對話」按鍵。
-  * 當鼠標懸停在菜單按鍵時，會自動彈出菜單。
-  * 刪除菜單中的「新的對話」按鍵。
-  * 為菜單添加是否「传送网页」內容按鍵。
-<img width="751" height="211" alt="image" src="https://github.com/user-attachments/assets/758a8ee7-44f3-404c-98ed-e2618800cefa" />
-<img width="334" height="542" alt="image" src="https://github.com/user-attachments/assets/39121a5b-6ea6-403c-a7b0-8aa33975923e" />
-
-### 历史
-  * 增加刪除所有歷史記錄的按鈕。
-  * 增加刪除二次確定。
-<img width="728" height="97" alt="螢幕擷取畫面 2025-11-11 022306" src="https://github.com/user-attachments/assets/579512b6-a160-4590-9819-d4aa23a01462" />
-<img width="736" height="323" alt="image" src="https://github.com/user-attachments/assets/7d5af081-79cc-4b3d-a030-f2ecbc7bc967" />
-
-### API 设置
-  * 自動抓取Base URL可用模型。
-  * 同時支持用戶輸入和列表選擇模型
-  * 輸入模型名稱時動態刷新模型列表。
-  * 添加測試模型是否可用按鍵。
-<img width="661" height="389" alt="image" src="https://github.com/user-attachments/assets/bc8c0b90-b84b-4c27-b995-c5514b29c520" />
-
-### 修正`<think>`和`<thinking>`標籤問題
-  * 修正LLM流式回覆帶有`<think>`或`<thinking>`標籤時，部份正文會被包裹在cot中。
-
-**修正前**
-<img width="696" height="739" alt="螢幕擷取畫面 2025-11-11 054048" src="https://github.com/user-attachments/assets/6158bc5d-1cc5-4473-acbd-ba724801f5ba" />
-
-**修正後**
-<img width="736" height="614" alt="image" src="https://github.com/user-attachments/assets/79a3ef15-3baa-41a0-9b5f-9cc7325777b1" />
-
-**LLM返回內容**
-<img width="780" height="806" alt="image" src="https://github.com/user-attachments/assets/7db22dee-b9a2-4f53-a862-18f5caa9faf6" />
+## 個人修改
+<img width="762" height="1597" alt="image" src="https://github.com/user-attachments/assets/c062ba79-65c7-49fe-92a3-c95bef342793" /> <img width="765" height="1593" alt="image" src="https://github.com/user-attachments/assets/3a75b671-f708-4765-8373-717e30fa93df" /> <img width="766" height="1600" alt="image" src="https://github.com/user-attachments/assets/ce7214a0-a5eb-4948-8d88-0532a1cb30bf" />
 
 ---
 ## 原版訊息
