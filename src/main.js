@@ -366,10 +366,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 调用带重试逻辑的 API
             await callAPIWithRetry(apiParams, chatManager, currentChat.id, (chatId, message) => {
-                // 在收到API响应后，移除等待动画
-                if (waitingMessage) {
-                    waitingMessage.remove();
-                }
+                // updateAIMessage 现在会处理等待消息的移除
                 chatContainerManager.syncMessage(chatId, message);
             });
 

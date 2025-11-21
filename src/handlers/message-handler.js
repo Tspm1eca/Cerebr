@@ -244,7 +244,14 @@ export async function updateAIMessage({
     chatContainer
 }) {
     let lastMessage = chatContainer.querySelector('.message:last-child');
-    const currentText = lastMessage.getAttribute('data-original-text') || '';
+
+    // 如果最后一条消息是等待动画，则移除它，并准备创建新消息
+    if (lastMessage && lastMessage.classList.contains('waiting')) {
+        lastMessage.remove();
+        lastMessage = null; // 重置 lastMessage 以便后续逻辑创建新消息
+    }
+
+    const currentText = lastMessage ? lastMessage.getAttribute('data-original-text') || '' : '';
 
 
     // 处理文本内容
