@@ -278,6 +278,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 webpageInfo: isExtensionEnvironment && sendWebpageSwitch.checked ? await getEnabledTabsContent() : null
             };
 
+            // 显示等待动画
+            createWaitingMessage(chatContainer);
+
             // 调用带重试逻辑的 API
             await callAPIWithRetry(apiParams, chatManager, currentChat.id, chatContainerManager.syncMessage);
 
